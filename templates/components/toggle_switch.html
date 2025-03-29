@@ -1,0 +1,53 @@
+{% macro toggle_switch(name, id, label, initial_checked=False, value="on", required=False, wrapper_class='', label_class='', switch_class='') %}
+{# 
+Renders an accessible toggle switch component.
+
+Args:
+    name (str): The 'name' attribute for the hidden checkbox input.
+    id (str): A unique ID for the input and label association.
+    label (str): The text label for the switch.
+    initial_checked (bool, optional): Whether the switch is on initially. Defaults to False.
+    value (str, optional): The value submitted when the switch is 'on'. Defaults to "on".
+    required (bool, optional): If the checkbox input itself is required (usually not for toggles). Defaults to False.
+    wrapper_class (str, optional): Additional classes for the main wrapper div.
+    label_class (str, optional): Additional classes for the label element.
+    switch_class (str, optional): Additional classes for the button switch element.
+#}
+<div class="toggle-switch-wrapper {{ wrapper_class }}" 
+     x-data="{ isOn: {{ 'true' if initial_checked else 'false' }} }">
+
+    {# The actual input, visually hidden but accessible #}
+    <input 
+        type="checkbox" 
+        name="{{ name }}" 
+        id="{{ id }}" 
+        class="toggle-switch-input" 
+        x-model="isOn"
+        value="{{ value }}"
+        {% if required %}required{% endif %}
+        tabindex="-1" {# Remove from tab order, button handles it #}
+        aria-hidden="true"> {# Hide from screen readers, button handles it #}
+
+    {# The visual switch button #}
+    <button 
+        type="button" 
+        @click="isOn = !isOn; $refs.input.focus()" {# Toggle state and focus for feedback #}
+        x-ref="input" {# Reference for focusing #}
+        role="switch" 
+        :aria-checked="isOn.toString()"
+        :class="{ 'on': isOn }"
+        class="toggle-switch-button {{ switch_class }}"
+        aria-labelledby="{{ id }}-label">
+        <span class="toggle-switch-thumb" :class="{ 'on': isOn }"></span>
+    </button>
+
+    {# The visible label #}
+    <label 
+        id="{{ id }}-label"
+        @click="$refs.input.click(); $refs.input.focus()" {# Click the button, not the hidden input #}
+        class="toggle-switch-label {{ label_class }}"
+        :class="{ 'on': isOn }">
+        {{ label }}
+    </label>
+</div>
+{% endmacro %}

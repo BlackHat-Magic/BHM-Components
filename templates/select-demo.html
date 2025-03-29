@@ -1,0 +1,58 @@
+{% extends "master.html" %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/components/select_dropdown.js') }}"></script> 
+{% endblock %}
+
+{% block body %}
+{% from "components/select.html" import select_shell %}
+<div class="container mt-8">
+    <h1 class="mb-4">Select (INCOMPLETE)</h1>
+    <!-- <form action="/submit-data" method="post"> -->
+    <form method="post">
+        <div class="card mb-4">
+            <div class="card-body">
+                
+                {# Define options as a Jinja variable #}
+                {% set grocery_options = [
+                    {'title': 'Milk', 'value': 'milk'},
+                    {'title': 'Eggs', 'value': 'eggs'},
+                    {'title': 'Cheese', 'value': 'cheese'},
+                    {'title': 'Bread', 'value': 'bread'},
+                    {'title': 'Apples', 'value': 'apples'},
+                    {'title': 'Bananas', 'value': 'bananas'},
+                    {'title': 'Yogurt', 'value': 'yogurt', 'disabled': True},
+                    {'title': 'Sugar', 'value': 'sugar'},
+                    {'title': 'Salt', 'value': 'salt'},
+                    {'title': 'Coffee', 'value': 'coffee'},
+                    {'title': 'Tea', 'value': 'tea'}
+                ] %}
+
+                {{ select_shell(
+                    name='grocery_item', 
+                    id='grocery-select', 
+                    label='Select Grocery Item',
+                    options=grocery_options,
+                    initial_value='bread',
+                    placeholder='Choose an item...',
+                    required=True,
+                    wrapper_class='mb-4'
+                    ) 
+                }}
+
+                    {{ select_shell(
+                    name='empty_select', 
+                    id='empty-select', 
+                    label='Another Select (No Initial)',
+                    options=grocery_options
+                    ) 
+                }}
+
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Submit Form</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

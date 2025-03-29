@@ -1,0 +1,28 @@
+{% macro accordion(items, id="accordion-group") %}
+<div x-data="{ 
+    activeAccordion: '', 
+    setActiveAccordion(id) { 
+        this.activeAccordion = (this.activeAccordion == id) ? '' : id 
+    } 
+}" class="accordion" id="{{ id }}">
+
+    {% for item in items %}
+    <div x-data="{ id: $id('accordion') }" 
+         :class="{ 'accordion-item-active': activeAccordion==id, 'accordion-item-inactive': activeAccordion!=id }" 
+         class="accordion-item">
+        <button @click="setActiveAccordion(id)" class="accordion-header">
+            <span>{{ item.title }}</span>
+            <div class="accordion-icon" :class="{ 'rotated': activeAccordion==id }">
+                <div class="accordion-icon-vertical"></div>
+                <div class="accordion-icon-horizontal" :class="{ 'rotated': activeAccordion==id }"></div>
+            </div>
+        </button>
+        <div x-show="activeAccordion==id" x-collapse x-cloak>
+            <div class="accordion-content">
+                {{ item.content|safe }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endmacro %}

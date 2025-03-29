@@ -1,0 +1,87 @@
+{% macro flash_banner(message, category='info', id=None) %}
+{# Banner specifically for Flask flash messages, appears top-center #}
+<div x-data="{ isVisible: true }" 
+     x-show="isVisible" 
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0 translate-y-[-20px]"
+     x-transition:enter-end="opacity-100 translate-y-0"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100 translate-y-0"
+     x-transition:leave-end="opacity-0 translate-y-[-20px]"
+     class="banner banner-flash banner-{{ category }}" 
+     role="alert"
+     {% if id %}id="{{ id }}"{% endif %}
+     x-cloak>
+    <span class="banner-message">{{ message }}</span>
+    <button @click="isVisible = false" class="banner-close-btn" aria-label="Dismiss">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+</div>
+{% endmacro %}
+
+
+{% macro top_banner(content, id=None, dismissible=True, icon_svg=None, banner_class="") %}
+{# General purpose banner sticking to the top #}
+<div x-data="{ isVisible: true }"
+     x-show="isVisible"
+     x-transition:enter="transition ease-out duration-500"
+     x-transition:enter-start="opacity-0 -translate-y-full"
+     x-transition:enter-end="opacity-100 translate-y-0"
+     x-transition:leave="transition ease-in duration-300"
+     x-transition:leave-start="opacity-100 translate-y-0"
+     x-transition:leave-end="opacity-0 -translate-y-full"
+     class="banner banner-top {{ banner_class }}"
+     role="status"
+     {% if id %}id="{{ id }}"{% endif %}
+     x-cloak>
+    <div class="banner-content">
+        {% if icon_svg %}
+        <span class="banner-icon">{{ icon_svg|safe }}</span>
+        {% endif %}
+        <span class="banner-message">{{ content|safe }}</span>
+    </div>
+    {% if dismissible %}
+    <button @click="isVisible = false" class="banner-close-btn" aria-label="Dismiss">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+    {% endif %}
+</div>
+{% endmacro %}
+
+
+{% macro bottom_banner(message, accept_text='Accept', deny_text=None, id=None, accept_action='', deny_action='', banner_class="") %}
+{# General purpose banner sticking to the bottom (e.g., cookies) #}
+<div x-data="{ isVisible: true }"
+     x-show="isVisible"
+     x-transition:enter="transition ease-out duration-500"
+     x-transition:enter-start="opacity-0 translate-y-full"
+     x-transition:enter-end="opacity-100 translate-y-0"
+     x-transition:leave="transition ease-in duration-300"
+     x-transition:leave-start="opacity-100 translate-y-0"
+     x-transition:leave-end="opacity-0 translate-y-full"
+     class="banner banner-bottom {{ banner_class }}"
+     role="dialog" 
+     aria-live="polite"
+     {% if id %}id="{{ id }}"{% endif %}
+     x-cloak>
+    <div class="banner-content">
+        <span class="banner-message">{{ message|safe }}</span>
+    </div>
+    <div class="banner-actions">
+        {% if deny_text %}
+        <button @click="{{ deny_action }}; isVisible = false" class="btn btn-secondary">
+            {{ deny_text }}
+        </button>
+        {% endif %}
+        <button @click="{{ accept_action }}; isVisible = false" class="btn btn-primary">
+            {{ accept_text }}
+        </button>
+    </div>
+</div>
+{% endmacro %}

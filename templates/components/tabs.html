@@ -1,0 +1,82 @@
+{% macro tabs_shell(id, tabs_data, initial_tab_index=0, orientation='horizontal', style='marker', wrapper_class='', tablist_class='', content_class='') %}
+{# 
+Renders an accessible tabs component.
+
+Args:
+    id (str): Base ID for the tabs elements.
+    tabs_data (list): List of dictionaries, each with 'title' and 'content_html'.
+                      Optionally include 'id_slug' for cleaner IDs if needed.
+    initial_tab_index (int, optional): Index of the initially active tab. Defaults to 0.
+    orientation (str, optional): 'horizontal' or 'vertical'. Defaults to 'horizontal'.
+    style (str, optional): Visual style for active tab indication ('marker' or 'underline'). Defaults to 'marker'.
+    wrapper_class (str, optional): Additional classes for the main wrapper div.
+    tablist_class (str, optional): Additional classes for the tab list container.
+    content_class (str, optional): Additional classes for the content panels container.
+#}
+<div x-data="tabsComponent({
+        initialIndex: {{ initial_tab_index }},
+        orientation: '{{ orientation }}',
+        style: '{{ style }}'
+     })"
+     x-init="init('{{ id }}')"
+     class="tabs-wrapper tabs-{{ orientation }} {{ wrapper_class }}"
+     id="{{ id }}-wrapper">
+
+    {# Tab List #}
+    <div x-ref="tablist"
+         role="tablist"
+         :aria-orientation="orientation"
+         class="tabs-list-container {{ tablist_class }}"
+         :class="{ 
+             'tabs-list-marker-style': style === 'marker', 
+             'tabs-list-underline-style': style === 'underline' 
+         }">
+        
+        {% for tab in tabs_data %}
+        {% set tab_id = id + '-tab-' + (tab.id_slug if tab.id_slug else loop.index0 | string) %}
+        {% set panel_id = id + '-panel-' + (tab.id_slug if tab.id_slug else loop.index0 | string) %}
+        <button 
+            id="{{ tab_id }}"
+            role="tab"
+            type="button"
+            @click="selectTab({{ loop.index0 }}, $event.currentTarget)"
+            @keydown.arrow{{ 'right' if orientation == 'horizontal' else 'down' }}.prevent="$focus.wrap().next()"
+            @keydown.arrow{{ 'left' if orientation == 'horizontal' else 'up' }}.prevent="$focus.wrap().previous()"
+            @keydown.home.prevent="$focus.first()"
+            @keydown.end.prevent="$focus.last()"
+            :tabindex="isActiveTab({{ loop.index0 }}) ? 0 : -1"
+            :aria-selected="isActiveTab({{ loop.index0 | string }})"
+            :aria-controls=" '{{ panel_id }}' "
+            class="tab-button"
+            :class="{ 'active': isActiveTab({{ loop.index0 }}) }">
+            {{ tab.title }}
+        </button>
+        {% endfor %}
+
+        {# Marker (only for 'marker' style) #}
+        <template x-if="style === 'marker'">
+            <div x-ref="marker" class="tab-marker" :style="markerStyle" x-cloak>
+                <div class="tab-marker-inner"></div>
+            </div>
+        </template>
+    </div>
+
+    {# Tab Panels #}
+    <div class="tabs-content-container {{ content_class }}">
+        {% for tab in tabs_data %}
+        {% set panel_id = id + '-panel-' + (tab.id_slug if tab.id_slug else loop.index0 | string) %}
+        {% set tab_id = id + '-tab-' + (tab.id_slug if tab.id_slug else loop.index0 | string) %}
+        <div 
+            id="{{ panel_id }}"
+            role="tabpanel"
+            tabindex="0" {# Make panel focusable #}
+            x-show="isActivePanel({{ loop.index0 }})"
+            aria-labelledby="{{ tab_id }}"
+            class="tab-panel"
+            x-cloak>
+            {{ tab.content_html | safe }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endmacro %}

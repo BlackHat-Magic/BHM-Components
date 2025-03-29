@@ -1,0 +1,11 @@
+{% extends "master.html" %}
+
+{% block body %}
+{% from "components/copy_btn.html" import copy_btn %}
+<div class="container mt-8">
+    <h1 class="mb-4">Copy Button</h1>
+    <div class="flex items-center">
+        {{ copy_btn("This is some copied text.") }}
+    </div>
+</div>
+{% endblock %}

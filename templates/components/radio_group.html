@@ -1,0 +1,48 @@
+{% macro radiogroup(name, id_prefix, options, label=None, initial_value=None, required=False, wrapper_class='') %}
+{# 
+Renders a group of styled radio buttons.
+
+Args:
+    name (str): The 'name' attribute for all radio inputs in the group.
+    id_prefix (str): A unique prefix for generating IDs for inputs/labels.
+    options (list): A list of dictionaries, each representing an option.
+                    Expected keys per dict: 'value', 'title', 'description'.
+    label (str, optional): An accessible label for the entire group. Defaults to None.
+    initial_value (str, optional): The value of the option to be selected initially. Defaults to None.
+    required (bool, optional): Whether a selection is required. Defaults to False.
+    wrapper_class (str, optional): Additional classes for the main wrapper div.
+#}
+<div class="radiogroup-wrapper {{ wrapper_class }}" 
+     role="radiogroup" 
+     {% if label %}aria-labelledby="{{ id_prefix }}-label"{% endif %}>
+
+    {% if label %}
+    <div class="radiogroup-label" id="{{ id_prefix }}-label">{{ label }}</div>
+    {% endif %}
+
+    <div x-data="{ selectedValue: '{{ initial_value | default('') }}' }" class="radiogroup-options-container">
+        {% for option in options %}
+        <label for="{{ id_prefix }}-{{ loop.index0 }}" 
+               class="radiogroup-item" 
+               :class="{ 'selected': selectedValue === '{{ option.value }}' }">
+            
+            <input 
+                type="radio" 
+                name="{{ name }}" 
+                id="{{ id_prefix }}-{{ loop.index0 }}" 
+                value="{{ option.value }}"
+                x-model="selectedValue"
+                class="radiogroup-input"
+                {% if required %}required{% endif %}>
+
+            <span class="radiogroup-content">
+                <span class="radiogroup-title">{{ option.title }}</span>
+                <span class="radiogroup-description">{{ option.description }}</span>
+            </span>
+        </label>
+        {% endfor %}
+    </div>
+    {# You can optionally display the selected value for debugging #}
+    {# <p>Selected: <span x-text="selectedValue"></span></p> #}
+</div>
+{% endmacro %}

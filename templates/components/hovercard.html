@@ -1,0 +1,48 @@
+{% macro hovercard_shell(id, trigger_html, card_html, position_classes='hovercard-bottom-center', card_width='w-80', enter_delay=600, leave_delay=300, wrapper_class='', card_class='') %}
+{# 
+Renders a hover card component.
+
+Args:
+    id (str): Base ID for the component elements.
+    trigger_html (str): Raw HTML for the trigger element (link, button, etc.).
+    card_html (str): Raw HTML for the content inside the hover card panel.
+    position_classes (str, optional): CSS classes for card positioning (e.g., 'hovercard-bottom-center', 'hovercard-top-center'). Defaults to 'hovercard-bottom-center'.
+    card_width (str, optional): CSS class for card width (e.g., 'w-80', 'w-auto'). Defaults to 'w-80'.
+    enter_delay (int, optional): Delay in ms before showing the card on hover. Defaults to 600.
+    leave_delay (int, optional): Delay in ms before hiding the card after leaving. Defaults to 300.
+    wrapper_class (str, optional): Additional classes for the main wrapper div.
+    card_class (str, optional): Additional classes for the card panel div.
+#}
+<div x-data="hoverCardComponent({ 
+        enterDelay: {{ enter_delay }}, 
+        leaveDelay: {{ leave_delay }} 
+     })"
+     @mouseenter="enter()" 
+     @mouseleave="leave()"
+     class="hovercard-wrapper {{ wrapper_class }}" 
+     id="{{ id }}-wrapper">
+
+    {# Trigger Slot #}
+    <div class="hovercard-trigger" id="{{ id }}-trigger" aria-describedby="{{ id }}-card">
+        {{ trigger_html | safe }}
+    </div>
+
+    {# Card Panel Slot #}
+    <div x-show="open"
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0 transform scale-95"
+         x-transition:enter-end="opacity-100 transform scale-100"
+         x-transition:leave="transition ease-in duration-100"
+         x-transition:leave-start="opacity-100 transform scale-100"
+         x-transition:leave-end="opacity-0 transform scale-95"
+         class="hovercard-panel {{ position_classes }} {{ card_width }} {{ card_class }}"
+         id="{{ id }}-card"
+         role="tooltip" {# Or 'dialog' if interactive content #}
+         x-cloak>
+         {# Use a nested div for padding/styling if needed #}
+         <div class="hovercard-content">
+             {{ card_html | safe }}
+         </div>
+    </div>
+</div>
+{% endmacro %}

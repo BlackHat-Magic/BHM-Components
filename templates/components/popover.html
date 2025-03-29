@@ -1,0 +1,77 @@
+{% macro popover_shell(id, trigger_html, content_html, show_arrow=True, initial_position='auto', offset=8, popover_width='w-80', wrapper_class='', popover_class='') %}
+{# 
+Renders a popover component that appears on click.
+
+Args:
+    id (str): Base ID for the popover elements.
+    trigger_html (str): Raw HTML for the trigger element (button, link, etc.).
+    content_html (str): Raw HTML for the content inside the popover panel.
+    show_arrow (bool, optional): Whether to display the pointing arrow. Defaults to True.
+    initial_position (str, optional): Preferred position ('auto', 'top', 'bottom'). Defaults to 'auto'.
+    offset (int, optional): Space between trigger and popover in pixels. Defaults to 8.
+    popover_width (str, optional): CSS class for popover width (e.g., 'w-80'). Defaults to 'w-80'.
+    wrapper_class (str, optional): Additional classes for the main wrapper div.
+    popover_class (str, optional): Additional classes for the popover panel div.
+#}
+<div x-data="popoverComponent({ 
+        arrow: {{ 'true' if show_arrow else 'false' }}, 
+        offset: {{ offset }},
+        initialPosition: '{{ initial_position }}'
+     })"
+     x-init="init()"
+     class="popover-wrapper {{ wrapper_class }}" 
+     id="{{ id }}-wrapper">
+
+    {# Trigger Slot #}
+    <div x-ref="trigger" 
+         @click="toggle()" 
+         class="popover-trigger"
+         id="{{ id }}-trigger"
+         aria-haspopup="dialog" {# More appropriate than 'tooltip' if interactive #}
+         :aria-expanded="open.toString()"
+         aria-controls="{{ id }}-panel">
+        {{ trigger_html | safe }}
+    </div>
+
+    {# Popover Panel #}
+    <div x-ref="panel"
+         x-show="open"
+         x-trap.inert.noscroll="open"
+         @click.away="close()"
+         @keydown.escape.window="close()"
+         :class="{ 
+             'popover-position-top': position === 'top', 
+             'popover-position-bottom': position === 'bottom' 
+         }"
+         :style="`margin-bottom: ${position === 'top' ? offset : 0}px; margin-top: ${position === 'bottom' ? offset : 0}px;`"
+         class="popover-panel {{ popover_width }} {{ popover_class }}"
+         id="{{ id }}-panel"
+         role="dialog" 
+         aria-modal="true"
+         aria-labelledby="{{ id }}-trigger" {# Or add a specific title element #}
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0 transform scale-95"
+         x-transition:enter-end="opacity-100 transform scale-100"
+         x-transition:leave="transition ease-in duration-100"
+         x-transition:leave-start="opacity-100 transform scale-100"
+         x-transition:leave-end="opacity-0 transform scale-95"
+         x-cloak>
+        
+        {# Arrow #}
+        <template x-if="arrow">
+            <div class="popover-arrow-container" 
+                 :class="{ 
+                     'popover-arrow-top': position === 'top', 
+                     'popover-arrow-bottom': position === 'bottom' 
+                 }">
+                <div class="popover-arrow"></div>
+            </div>
+        </template>
+
+        {# Content Slot #}
+        <div class="popover-content">
+            {{ content_html | safe }}
+        </div>
+    </div>
+</div>
+{% endmacro %}

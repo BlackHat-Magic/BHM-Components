@@ -1,0 +1,52 @@
+{% extends "master.html" %}
+
+{% block body %}
+{% from "components/radio_group.html" import radiogroup %}
+<div class="container mt-8">
+    <h1 class="mb-4">Modal</h1>
+    <!-- <form action="/submit-prefs" method="post"> -->
+    <form method="post">
+        <div class="card mb-4">
+            <div class="card-body">
+                
+                {% set tech_options = [
+                    {
+                        'title': 'Alpine.js',
+                        'description': 'A rugged, minimal framework for composing behavior directly in your markup.',
+                        'value': 'alpine'
+                    },
+                    {
+                        'title': 'HTMX',
+                        'description': 'High power tools for HTML, enabling AJAX, CSS Transitions, WebSockets and more.',
+                        'value': 'htmx'
+                    },
+                    {
+                        'title': 'Flask',
+                        'description': 'A lightweight WSGI web application framework in Python.',
+                        'value': 'flask'
+                    },
+                    {
+                        'title': 'Vanilla CSS',
+                        'description': 'Cascading was <em>not</em> a mistake.',
+                        'value': 'css',
+                    }
+                ] %}
+
+                {{ radiogroup(
+                    name='tech_preference', 
+                    id_prefix='tech-pref', 
+                    options=tech_options,
+                    label='Select your favorite technology:',
+                    initial_value='htmx',
+                    required=True
+                   ) 
+                }}
+
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Save Preference</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

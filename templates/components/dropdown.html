@@ -1,0 +1,104 @@
+{% macro dropdown_shell(id, trigger_html, menu_html, position_classes='left-0', menu_width='w-56', wrapper_class='', menu_class='') %}
+{# 
+Renders the dropdown container, trigger slot, and menu panel slot.
+Handles open/close state and basic transitions.
+
+Args:
+    id (str): Base ID for accessibility and targeting.
+    trigger_html (str): Raw HTML for the trigger element (button, link, etc.).
+    menu_html (str): Raw HTML for the content inside the dropdown menu panel.
+    position_classes (str, optional): CSS classes for menu positioning (e.g., 'left-0', 'right-0', 'dropdown-menu-center'). Defaults to 'left-0'.
+    menu_width (str, optional): CSS class for menu width (e.g., 'w-56', 'w-auto'). Defaults to 'w-56'.
+    wrapper_class (str, optional): Additional classes for the main wrapper div.
+    menu_class (str, optional): Additional classes for the menu panel div.
+#}
+<div x-data="{ open: false }" 
+     class="dropdown-wrapper {{ wrapper_class }}" 
+     @keydown.escape.prevent="open = false; $refs.trigger.focus()"
+     id="{{ id }}-wrapper">
+    
+    {# Trigger Slot #}
+    <div x-ref="trigger" 
+         @click="open = !open" 
+         aria-haspopup="true" 
+         :aria-expanded="open.toString()" 
+         aria-controls="{{ id }}-menu">
+        {{ trigger_html | safe }}
+    </div>
+
+    {# Menu Panel Slot #}
+    <div x-show="open" 
+         @click.away="open = false"
+         x-transition:enter="transition ease-out duration-100"
+         x-transition:enter-start="opacity-0 transform scale-95"
+         x-transition:enter-end="opacity-100 transform scale-100"
+         x-transition:leave="transition ease-in duration-75"
+         x-transition:leave-start="opacity-100 transform scale-100"
+         x-transition:leave-end="opacity-0 transform scale-95"
+         class="dropdown-menu {{ position_classes }} {{ menu_width }} {{ menu_class }}"
+         id="{{ id }}-menu"
+         role="menu" 
+         aria-orientation="vertical" 
+         aria-labelledby="{{ id }}-trigger" {# Assuming trigger has id={id}-trigger #}
+         x-cloak>
+         {# Use a nested div for padding, allowing menu_html to be structured freely #}
+         <div class="dropdown-menu-content">
+            {{ menu_html | safe }}
+         </div>
+    </div>
+</div>
+{% endmacro %}
+
+
+{% macro dropdown_item(text, href='#', icon_svg=None, shortcut=None, onclick=None, disabled=False, item_class='') %}
+{# Renders a standard dropdown menu item (link or button-like). #}
+<a href="{{ href if not disabled else '#' }}" 
+   class="dropdown-item {{ item_class }}" 
+   :class="{ 'disabled': {{ 'true' if disabled else 'false' }} }"
+   role="menuitem"
+   {% if onclick and not disabled %}@click.prevent="{{ onclick }}; $dispatch('clickaway')" {% elif not disabled %}@click="$dispatch('clickaway')" {% endif %} {# Close dropdown on click #}
+   {% if disabled %}aria-disabled="true" tabindex="-1"{% endif %}>
+    
+    {% if icon_svg %}
+    <span class="dropdown-item-icon">{{ icon_svg|safe }}</span>
+    {% endif %}
+    
+    <span class="dropdown-item-text">{{ text }}</span>
+    
+    {% if shortcut %}
+    <span class="dropdown-item-shortcut">{{ shortcut }}</span>
+    {% endif %}
+</a>
+{% endmacro %}
+
+
+{% macro dropdown_divider(divider_class='') %}
+{# Renders a horizontal divider. #}
+<div class="dropdown-divider {{ divider_class }}" role="separator"></div>
+{% endmacro %}
+
+
+{% macro dropdown_heading(text, heading_class='') %}
+{# Renders a non-interactive heading within the dropdown. #}
+<div class="dropdown-heading {{ heading_class }}">{{ text }}</div>
+{% endmacro %}
+
+{% macro dropdown_submenu_item(text, submenu_html, icon_svg=None, item_class='', submenu_class='', submenu_position='right-0') %}
+{# Renders an item that triggers a submenu on hover/focus. #}
+<div class="dropdown-submenu-wrapper {{ item_class }}" role="menuitem" aria-haspopup="true">
+    <div class="dropdown-item dropdown-submenu-trigger">
+        {% if icon_svg %}
+        <span class="dropdown-item-icon">{{ icon_svg|safe }}</span>
+        {% endif %}
+        <span class="dropdown-item-text">{{ text }}</span>
+        <span class="dropdown-item-submenu-indicator">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </span>
+    </div>
+    <div class="dropdown-submenu-panel {{ submenu_position }} {{ submenu_class }}">
+        <div class="dropdown-menu-content">
+            {{ submenu_html | safe }}
+        </div>
+    </div>
+</div>
+{% endmacro %}

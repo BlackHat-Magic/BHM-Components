@@ -1,0 +1,13 @@
+{% extends "master.html" %}
+
+{% block head %}
+<script src="{{url_for('static', filename='js/components/accordion.js')}}"></script>
+{% endblock %}
+
+{% block body %}
+{% from "components/accordion.html" import accordion %}
+<div class="container mt-8">
+    <h1 class="mb-4"> Accordion Example</h1>
+    {{ accordion(accordion_data) }}
+</div>
+{% endblock %}

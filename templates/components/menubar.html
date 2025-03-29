@@ -1,0 +1,87 @@
+{% from "components/dropdown.html" import dropdown_item, dropdown_divider, dropdown_heading, dropdown_submenu_item %} {# Import helpers #}
+
+{% macro menubar_shell(id, menus, wrapper_class='') %}
+{# 
+Renders the main menu bar container and manages the open state.
+
+Args:
+    id (str): Base ID for the menubar.
+    menus (list): A list of dictionaries, each defining a top-level menu. 
+                  Expected keys per dict: 'name' (unique id), 'label' (text), 'content_html' (menu items).
+                  Optional keys: 'menu_width', 'menu_class'.
+    wrapper_class (str, optional): Additional classes for the main wrapper div.
+#}
+<div x-data="{ 
+        open: false, 
+        activeMenu: '',
+        toggleMenu(menuName) {
+            if (this.open && this.activeMenu === menuName) {
+                this.open = false;
+                this.activeMenu = '';
+            } else {
+                this.open = true;
+                this.activeMenu = menuName;
+            }
+        },
+        switchMenu(menuName) {
+            if (this.open) {
+                this.activeMenu = menuName;
+            }
+        }
+    }" 
+    @click.away="open = false; activeMenu = ''" 
+    @keydown.escape.prevent="open = false; activeMenu = ''; $refs.menubar.focus()"
+    class="menubar-wrapper {{ wrapper_class }}" 
+    id="{{ id }}-wrapper"
+    role="menubar"
+    x-ref="menubar" 
+    tabindex="-1"> {# Make the wrapper focusable for Escape key #}
+
+    <div class="menubar-inner">
+        {% for menu in menus %}
+        <div class="menubar-menu-container" 
+             @mouseenter="switchMenu('{{ menu.name }}')" 
+             @focusin="switchMenu('{{ menu.name }}')"> {# Handle focus for keyboard nav #}
+            
+            {# Trigger Button #}
+            <button 
+                @click="toggleMenu('{{ menu.name }}')"
+                :class="{ 'active': open && activeMenu === '{{ menu.name }}' }"
+                class="menubar-trigger"
+                id="{{ id }}-trigger-{{ menu.name }}"
+                role="menuitem"
+                aria-haspopup="true"
+                :aria-expanded="(open && activeMenu === '{{ menu.name }}').toString()"
+                aria-controls="{{ id }}-menu-{{ menu.name }}">
+                {{ menu.label }}
+            </button>
+
+            {# Menu Panel #}
+            <div x-show="open && activeMenu === '{{ menu.name }}'"
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="opacity-100 transform scale-100"
+                 x-transition:leave-end="opacity-0 transform scale-95"
+                 class="menubar-menu-panel {{ menu.menu_width | default('w-56') }} {{ menu.menu_class | default('') }}"
+                 id="{{ id }}-menu-{{ menu.name }}"
+                 role="menu"
+                 aria-orientation="vertical"
+                 aria-labelledby="{{ id }}-trigger-{{ menu.name }}"
+                 x-cloak>
+                 <div class="dropdown-menu-content"> {# Reuse dropdown padding class #}
+                    {{ menu.content_html | safe }}
+                 </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endmacro %}
+
+{# --- Reusable Item Macros (from dropdown.html, ensure they are available) --- #}
+{# {% macro dropdown_item(...) %} ... {% endmacro %} #}
+{# {% macro dropdown_divider(...) %} ... {% endmacro %} #}
+{# {% macro dropdown_heading(...) %} ... {% endmacro %} #}
+{# {% macro dropdown_submenu_item(...) %} ... {% endmacro %} #}

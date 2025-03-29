@@ -1,0 +1,76 @@
+{% extends "master.html" %}
+
+{% block body %}
+{% from "components/dropdown.html" import dropdown, dropdown_item, dropdown_divider, dropdown_submenu, dropdown_heading, dropdown_submenu_item, dropdown_shell %}
+<div class="container mt-8">
+    <h1 class="mb-4">Dropdown</h1>
+    <div class="grid grid-cols-2 items-center justify-between">
+        <div>
+        {% set user_trigger %}
+        <button class="btn btn-secondary dropdown-trigger-user" id="user-dropdown-trigger">
+            <img src="https://via.placeholder.com/32" alt="User Avatar" class="avatar">
+            <span class="user-info">
+                <span>John Doe</span>
+                <span class="username">@johndoe</span>
+            </span>
+            <svg class="chevron-icon" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg>
+        </button>
+        <style>
+            .dropdown-trigger-user { display: inline-flex; align-items: center; padding: var(--space-2) var(--space-3); gap: var(--space-3); }
+            .dropdown-trigger-user .avatar { width: 32px; height: 32px; border-radius: var(--radius-full); border: 1px solid var(--surface-1); }
+            .dropdown-trigger-user .user-info { display: flex; flex-direction: column; text-align: left; line-height: 1.2; }
+            .dropdown-trigger-user .user-info .username { font-size: 0.75rem; color: var(--text-secondary); }
+            .dropdown-trigger-user .chevron-icon { width: 16px; height: 16px; margin-left: var(--space-2); stroke: currentColor; fill: none; stroke-width: 2; }
+        </style>
+        {% endset %}
+
+        {% set user_menu %}
+            {{ dropdown_heading('My Account') }}
+            {{ dropdown_divider() }}
+            {{ dropdown_item(text='Profile', href='#profile', shortcut='⇧⌘P', icon_svg='<svg viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>') }}
+            {{ dropdown_item(text='Billing', href='#billing', shortcut='⌘B', icon_svg='<svg viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>') }}
+            {{ dropdown_item(text='Settings', href='#settings', shortcut='⌘S', icon_svg='<svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>') }}
+            {{ dropdown_divider() }}
+            {# Submenu Example #}
+            {% set invite_submenu %}
+                {{ dropdown_item(text='Email', href='#invite-email', icon_svg='<svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>') }}
+                {{ dropdown_item(text='Message', href='#invite-message', icon_svg='<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>') }}
+                {{ dropdown_divider() }}
+                {{ dropdown_item(text='More...', href='#invite-more') }}
+            {% endset %}
+            {{ dropdown_submenu_item(text='Invite users', submenu_html=invite_submenu, icon_svg='<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>', submenu_position="") }}
+            {{ dropdown_divider() }}
+            {{ dropdown_item(text='Log out', href='#logout', shortcut='⇧⌘Q', icon_svg='<svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>') }}
+        {% endset %}
+        {{ dropdown_shell(id='user-dropdown', trigger_html=user_trigger, menu_html=user_menu, position_classes='right-0', menu_width='w-64') }}
+        </div>
+
+        {% set simple_trigger %}
+            <button class="btn btn-primary" id="actions-dropdown-trigger">Actions</button>
+        {% endset %}
+
+        {% set simple_menu %}
+            {{ dropdown_item(text='New Tab', href='#new-tab', shortcut='⌘T') }}
+            {{ dropdown_item(text='New Window', href='#new-window', shortcut='⌘N') }}
+            {{ dropdown_item(text='New Private Window', href='#', shortcut='⇧⌘N', disabled=True) }}
+            {{ dropdown_divider() }}
+            {# Checkable/Radio items would need custom HTML + Alpine state here #}
+            {# Example: Raw HTML for a checkable item (state needs adding) #}
+            <div x-data="{ checked: true }" 
+                @click="checked = !checked; $dispatch('clickaway')" 
+                class="dropdown-item" 
+                role="menuitemcheckbox" 
+                :aria-checked="checked.toString()">
+                <span class="dropdown-item-check-indicator">
+                    <svg x-show="checked" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4"><path d="M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z"></path></svg>
+                </span>
+                <span class="dropdown-item-text">Show Bookmarks Bar</span>
+                <span class="dropdown-item-shortcut">⌘⇧B</span>
+            </div>
+            <style>.dropdown-item-check-indicator { width: 16px; height: 16px; margin-right: var(--space-3); display: inline-flex; align-items: center; justify-content: center; }</style>
+        {% endset %}
+
+        {{ dropdown_shell(id='actions-dropdown', trigger_html=simple_trigger, menu_html=simple_menu, position_classes='left-0', menu_width='w-56') }}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% macro datepicker(name, id, label, initial_value="", placeholder="Select date", required=False, date_format='YYYY-MM-DD') %}
+{# 
+Renders a date picker component with a text input and a calendar dropdown.
+
+Args:
+    name (str): The name attribute for the hidden input (used for form submission).
+    id (str): The base ID for the component elements (label, visible input).
+    label (str): The text for the label.
+    initial_value (str, optional): Initial date value (YYYY-MM-DD format recommended). Defaults to "".
+    placeholder (str, optional): Placeholder for the visible input. Defaults to "Select date".
+    required (bool, optional): Whether the input is required. Defaults to False.
+    date_format (str, optional): Display format ('YYYY-MM-DD', 'MM/DD/YYYY', 'DD.MM.YYYY', 'M d, Y'). Defaults to 'YYYY-MM-DD'.
+#}
+<div class="form-group datepicker-wrapper" 
+     x-data="datepickerComponent({ 
+         initialValue: '{{ initial_value | default('') }}', 
+         displayFormat: '{{ date_format | default('YYYY-MM-DD') }}',
+         inputName: '{{ name }}'
+     })" 
+     x-init="initPicker()" 
+     x-cloak>
+    
+    <label for="{{ id }}" class="form-label">{{ label }}</label>
+    
+    <div class="datepicker-input-container">
+        {# Visible input for display format #}
+        <input 
+            x-ref="displayInput" 
+            type="text" 
+            id="{{ id }}"
+            class="form-input datepicker-display-input" 
+            @click="open = !open" 
+            x-model="displayValue" 
+            @keydown.escape.prevent="open = false; $refs.displayInput.blur()"
+            placeholder="{{ placeholder }}"
+            readonly
+            {% if required %}required{% endif %}>
+
+        {# Hidden input for standard YYYY-MM-DD submission #}
+        <input 
+            type="hidden" 
+            name="{{ name }}" 
+            x-model="standardValue"
+            {% if required %}required{% endif %}>
+
+        <button 
+            type="button"
+            class="datepicker-trigger-button" 
+            @click="open = !open" 
+            aria-label="Toggle calendar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+        </button>
+
+        {# Calendar Dropdown #}
+        <div 
+            x-show="open" 
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="opacity-0 transform -translate-y-2"
+            x-transition:enter-end="opacity-100 transform translate-y-0"
+            x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="opacity-100 transform translate-y-0"
+            x-transition:leave-end="opacity-0 transform -translate-y-2"
+            @click.away="open = false" 
+            class="datepicker-dropdown"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="{{ id }}-calendar-heading">
+            
+            <div class="datepicker-header">
+                <button 
+                    type="button" 
+                    class="datepicker-nav-button" 
+                    @click.prevent="previousMonth()"
+                    aria-label="Previous month">
+                    <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <div class="datepicker-heading" id="{{ id }}-calendar-heading">
+                    <span x-text="monthNames[currentMonth]" class="datepicker-month-name"></span>
+                    <span x-text="currentYear" class="datepicker-year"></span>
+                </div>
+                <button 
+                    type="button" 
+                    class="datepicker-nav-button" 
+                    @click.prevent="nextMonth()"
+                    aria-label="Next month">
+                    <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+
+            <div class="datepicker-grid datepicker-days-header">
+                <template x-for="dayName in dayNames" :key="dayName">
+                    <div x-text="dayName" class="datepicker-day-heading"></div>
+                </template>
+            </div>
+
+            <div class="datepicker-grid datepicker-days-grid">
+                <template x-for="blankDay in blankDays">
+                    <div class="datepicker-day datepicker-day-blank"></div>
+                </template>
+                <template x-for="day in daysInMonth" :key="day">
+                    <div 
+                        x-text="day" 
+                        @click="selectDay(day)" 
+                        class="datepicker-day datepicker-day-selectable"
+                        :class="{
+                            'today': isToday(day),
+                            'selected': isSelected(day)
+                        }"
+                        role="button"
+                        :aria-pressed="isSelected(day) ? 'true' : 'false'"
+                        :aria-label="getFormattedDayLabel(day)">
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}

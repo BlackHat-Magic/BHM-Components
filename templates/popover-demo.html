@@ -1,0 +1,70 @@
+{% extends "master.html" %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/components/popover.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+{% from "components/popover.html" import popover_shell %}
+<div class="container mt-8">
+    <h1 class="mb-4">Popover</h1>
+    {% set trigger1 %}
+        <button class="btn btn-icon btn-secondary" aria-label="Settings"> {# Example icon button #}
+            <span>Form Popover</span>
+        </button>
+        {# Add .btn-icon style if needed: padding: var(--space-2); width: auto; #}
+    {% endset %}
+
+    {% set content1 %}
+        <h4>Dimensions</h4>
+        <p>Set the dimensions for the layer.</p>
+        <div class="grid gap-2">
+            <div class="grid grid-cols-3 items-center gap-4">
+                <label class="form-label mb-0" for="{{ id }}-width">Width</label>
+                <input class="form-input col-span-2" id="{{ id }}-width" value="100%">
+            </div>
+            <div class="grid grid-cols-3 items-center gap-4">
+                <label class="form-label mb-0" for="{{ id }}-maxWidth">Max. width</label>
+                <input class="form-input col-span-2" id="{{ id }}-maxWidth" value="300px">
+            </div>
+            <div class="grid grid-cols-3 items-center gap-4">
+                <label class="form-label mb-0" for="{{ id }}-height">Height</label>
+                <input class="form-input col-span-2" id="{{ id }}-height" value="25px">
+            </div>
+            <div class="grid grid-cols-3 items-center gap-4">
+                <label class="form-label mb-0" for="{{ id }}-maxHeight">Max. height</label>
+                <input class="form-input col-span-2" id="{{ id }}-maxHeight" value="none">
+            </div>
+        </div>
+    {% endset %}
+
+    {{ popover_shell(
+        id='settings-popover', 
+        trigger_html=trigger1, 
+        content_html=content1,
+        popover_width='w-80'
+    ) 
+    }}
+
+    {% set trigger2 %}
+        <button class="btn btn-outline">Info Popover</button> {# Example style #}
+        {# Add .btn-outline style if needed #}
+    {% endset %}
+
+    {% set content2 %}
+        <h4>Information</h4>
+        <p>This popover has no arrow and prefers to open above the trigger.</p>
+        <button class="btn btn-sm btn-primary" @click="close()">Close Me</button> {# Button inside popover #}
+    {% endset %}
+
+    {{ popover_shell(
+        id='info-popover', 
+        trigger_html=trigger2, 
+        content_html=content2,
+        show_arrow=False,
+        initial_position='top',
+        popover_width='w-64'
+    ) 
+    }}
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% macro select_shell(name, id, label, options, initial_value=None, placeholder="Select an option", required=False, wrapper_class='', button_class='', menu_class='') %}
+{# 
+Renders a custom dropdown select component.
+
+Args:
+    name (str): The 'name' attribute for the hidden input (for form submission).
+    id (str): Base ID for the component elements.
+    label (str): Text for the label associated with the select.
+    options (list): List of option dictionaries. Expected keys: 'value', 'title'. Optional: 'disabled'.
+    initial_value (str, optional): The value of the option to select initially. Defaults to None.
+    placeholder (str, optional): Text shown when no option is selected. Defaults to "Select an option".
+    required (bool, optional): Whether a selection is required. Defaults to False.
+    wrapper_class (str, optional): Additional classes for the main wrapper div.
+    button_class (str, optional): Additional classes for the trigger button.
+    menu_class (str, optional): Additional classes for the dropdown menu ul.
+#}
+<div class="form-group select-wrapper {{ wrapper_class }}" 
+     x-data="selectComponent({
+         options: {{ options | tojson | safe }},
+         initialValue: '{{ initial_value | default('') }}',
+         placeholder: '{{ placeholder }}',
+         name: '{{ name }}'
+     })"
+     x-init="init()"
+     @keydown.escape.prevent.stop="close(); focusTrigger()"
+     @keydown.tab="close()"
+     @keydown.down.prevent="$event.shiftKey || open(); moveActive(1)"
+     @keydown.up.prevent="moveActive(-1)"
+     @keydown.enter.prevent.stop="selectActive(); focusTrigger()"
+     @keydown.home.prevent="setActiveByIndex(0)"
+     @keydown.end.prevent="setActiveByIndex(options.length - 1)"
+     @keydown="handleSearch($event)"
+     role="listbox" 
+     :aria-expanded="open.toString()"
+     aria-labelledby="{{ id }}-label">
+    
+    <label class="form-label" id="{{ id }}-label" @click="$refs.trigger.focus()">{{ label }}</label>
+
+    {# Trigger Button (looks like an input) #}
+    <button 
+        type="button" 
+        x-ref="trigger" 
+        @click="toggle()" 
+        class="select-trigger {{ button_class }}"
+        :class="{ 'focus': open }" {# Custom focus style when open #}
+        aria-haspopup="listbox"
+        :aria-labelledby="value ? '{{ id }}-selected-value' : '{{ id }}-placeholder'"
+        aria-controls="{{ id }}-menu">
+        
+        <span x-show="!value" class="select-placeholder" id="{{ id }}-placeholder">{{ placeholder }}</span>
+        <span x-show="value" x-text="displayValue" class="select-display-value" id="{{ id }}-selected-value"></span>
+        
+        <span class="select-chevron">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd"></path></svg>
+        </span>
+    </button>
+
+    {# Hidden Input for Form Submission #}
+    <input 
+        type="hidden" 
+        name="{{ name }}" 
+        x-model="value"
+        {% if required %}required{% endif %}>
+
+    {# Dropdown Menu #}
+    <ul x-show="open" 
+        x-ref="menu" 
+        @click.away="close()"
+        x-transition:enter="transition ease-out duration-50"
+        x-transition:enter-start="opacity-0 -translate-y-1"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-50"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0 -translate-y-1"
+        :class="{ 'select-menu-top': position === 'top', 'select-menu-bottom': position === 'bottom' }"
+        class="select-menu {{ menu_class }}"
+        id="{{ id }}-menu"
+        role="listbox"
+        aria-labelledby="{{ id }}-label"
+        x-cloak>
+        
+        <template x-for="(option, index) in options" :key="option.value">
+            <li 
+                @click="selectOption(option)"
+                @mouseenter="setActiveOption(option)"
+                @mouseleave="clearActiveOption()"
+                :id="`{{ id }}-option-${option.value}`"
+                :class="{ 
+                    'active': isActive(option.value), 
+                    'selected': isSelected(option.value),
+                    'disabled': option.disabled 
+                }"
+                class="select-item"
+                role="option"
+                :aria-selected="isSelected(option.value).toString()"
+                :aria-disabled="option.disabled ? 'true' : null">
+                
+                <span class="select-checkmark">
+                    <svg x-show="isSelected(option.value)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </span>
+                <span x-text="option.title" class="select-item-text"></span>
+            </li>
+        </template>
+        
+        {# Optional: Message when no options match search #}
+        <li x-show="options.length === 0" class="select-item-empty">No options found.</li>
+    </ul>
+</div>
+{% endmacro %}
