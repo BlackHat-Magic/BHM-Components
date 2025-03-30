@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0"] # Minimum version of setuptools needed
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bhm-components"
+version = "0.1.0" # Start with an initial version
+description = "A reusable set of Flask/Alpine/HTMX UI components."
+readme = "README.md"
+license = { file = "LICENSE.md" }
+authors = [
+    { name = "Luke Henderson", email = "personal@lukeh.us" },
+]
+keywords = ["flask", "alpinejs", "htmx", "components", "ui"]
+classifiers = [ # Standard classifiers (helps with searching on PyPI if public)
+    "Development Status :: 3 - Alpha",
+    "Framework :: Flask",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: AGPL-3.0", # Choose your license
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "Flask>=3.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/BlackHat-Magic/BHM-Components"
+Repository = "https://github.com/BlackHat-Magic/BHM-Components"
+
+[tool.setuptools.packages.find]
+where = ["src"] # Look for packages in the src directory
+
+[tool.setuptools.package-data]
+# Include all files within the 'templates' and 'static' directories
+# The key is the package name (matching the directory under src/)
+"bhm-components" = [
+    "templates/**", # Include everything under templates
+    "static/**",    # Include everything under static
+]

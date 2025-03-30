@@ -1,18 +1,3 @@
-@import "components/accordion.css";
-@import "components/banner.css";
-@import "components/copy_btn.css";
-@import "components/date_picker.css";
-@import "components/dropdown.css";
-@import "components/hovercard.css";
-@import "components/menubar.css";
-@import "components/modal.css";
-@import "components/popover.css";
-@import "components/radio_group.css";
-@import "components/select.css";
-@import "components/sidebar.css";
-@import "components/tabs.css";
-@import "components/toggle_switch.css";
-
 /* === CSS Variables and Reset === */
 :root {
   /* Catppuccin Latte (Light) */
