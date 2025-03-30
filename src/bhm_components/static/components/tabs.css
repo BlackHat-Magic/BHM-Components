@@ -11,7 +11,6 @@
     border-radius: var(--radius-md);
     padding: var(--space-1);
     overflow: hidden; /* Clip marker if needed */
-    min-width: max-content;
 }
 .tabs-wrapper.tabs-vertical .tabs-list-container {
     display: flex;
@@ -55,6 +54,7 @@
     white-space: nowrap;
     transition: color var(--transition-fast) var(--ease-out),
         background-color var(--transition-fast) var(--ease-out);
+    min-width: max-content;
 }
 .tab-button:hover {
     color: var(--text-primary);
