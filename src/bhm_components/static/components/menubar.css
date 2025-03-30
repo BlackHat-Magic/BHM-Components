@@ -63,7 +63,7 @@
     border: 1px solid var(--surface-0);
     border-radius: var(--radius-lg);
     box-shadow: 0 5px 15px var(--shadow);
-    overflow: hidden; 
+    /* overflow: hidden;  */
     transform-origin: top left; 
     min-width: 12rem; /* Default min-width */
   }
