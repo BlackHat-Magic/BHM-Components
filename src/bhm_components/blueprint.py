@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 components_bp = Blueprint(
-    "bhm-components",
+    "bhm_components",
     __name__,
     template_folder="templates",
     static_folder="static",
