@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bhm-components"
-version = "0.1.0" # Start with an initial version
+version = "0.1.0"
 description = "A reusable set of Flask/Alpine/HTMX UI components."
 readme = "README.md"
 license = { file = "LICENSE.md" }
@@ -41,7 +41,7 @@ where = ["src"] # Look for packages in the src directory
 [tool.setuptools.package-data]
 # Include all files within the 'templates' and 'static' directories
 # The key is the package name (matching the directory under src/)
-"bhm-components" = [
+"bhm_components" = [
     "templates/**", # Include everything under templates
     "static/**",    # Include everything under static
 ]
