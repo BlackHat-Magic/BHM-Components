@@ -46,12 +46,8 @@
     background-color: var(--surface-0);
   }
   .menubar-trigger.active { /* Style when its menu is open */
-    background-color: var(--surface-1);
-    color: var(--text-primary);
-  }
-  .menubar-trigger:focus {
-    outline: none; /* Or custom focus style */
-    background-color: var(--surface-1); /* Indicate focus */
+    /* background-color: var(--surface-1);
+    color: var(--text-primary); */
   }
   
   .menubar-menu-panel {

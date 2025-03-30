@@ -83,7 +83,7 @@ Args:
 <div class="dropdown-heading {{ heading_class }}">{{ text }}</div>
 {% endmacro %}
 
-{% macro dropdown_submenu_item(text, submenu_html, icon_svg=None, item_class='', submenu_class='', submenu_position='right-0') %}
+{% macro dropdown_submenu_item(text, submenu_html, icon_svg=None, item_class='', submenu_class='', submenu_position='') %}
 {# Renders an item that triggers a submenu on hover/focus. #}
 <div class="dropdown-submenu-wrapper {{ item_class }}" role="menuitem" aria-haspopup="true">
     <div class="dropdown-item dropdown-submenu-trigger">
